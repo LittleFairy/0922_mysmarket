@@ -7,7 +7,7 @@ import store from './store'
 import {Button} from 'mint-ui'
 import './mock/mockServer' // 加载mockserver即可
 import './fiters' // 加载自定义过滤器
-import VueLazyload from 'vue-lazyload'
+import VueLazyload from 'vue-lazyload' // 图片懒加载
 
 // 注册全局组件标签
 Vue.component(Button.name, Button) // <mt-button>
