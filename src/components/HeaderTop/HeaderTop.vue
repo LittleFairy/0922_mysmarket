@@ -10,11 +10,11 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      title: String
-    }
+export default {
+  props: {
+    title: String
   }
+}
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -34,7 +34,10 @@
       transform translateY(-50%)
       width 10%
       height 50%
-      .icon-sousuo
+      .icon-sousuo1
+        font-size 25px
+        color #fff
+      .icon-geren1
         font-size 25px
         color #fff
     .header_title

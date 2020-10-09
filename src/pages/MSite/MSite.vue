@@ -1,122 +1,38 @@
 <template>
   <div class="msite">
     <!--首页头部-->
-    <HeaderTop title="天津市西青区">
-      <span class="header_search" slot="left">
+    <HeaderTop :title="address.name">
+      <router-link slot="left" to="/search" class="header_search">
         <i class="iconfont icon-sousuo1"></i>
-      </span>
-      <span class="header_login" slot="right">
-        <span class="header_login_text">登录|注册</span>
-      </span>
+      </router-link>
+      <router-link slot="right" :to="userInfo._id ? '/userinfo': 'login'" class="header_login">
+        <span class="header_login_text" v-if="!userInfo._id">
+          登录|注册
+        </span>
+        <span class="header_login_text" v-else>
+          <i class="iconfont icon-geren1"></i>
+        </span>
+      </router-link>
     </HeaderTop>
     <!--首页导航-->
     <nav class="msite_nav border-1px">
-      <div class="swiper-container">
+      <div class="swiper-container" v-if="categorysArr.length>0">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <span href="javascript:" class="link_to_food">
+          <div class="swiper-slide" v-for="(cs,index) in categorysArr" :key="index">
+            <span class="link_to_food" v-for="(c,index2) in cs" :key="index2">
               <div class="food_container">
-                <img src="./images/nav/1.jpg">
+                <img :src="imgBaseUrl+c.image_url">
               </div>
-              <span>甜品饮品</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>商超便利</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/3.jpg">
-              </div>
-              <span>美食</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/4.jpg">
-              </div>
-              <span>简餐</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/5.jpg">
-              </div>
-              <span>新店特惠</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/6.jpg">
-              </div>
-              <span>准时达</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/7.jpg">
-              </div>
-              <span>预订早餐</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/8.jpg">
-              </div>
-              <span>土豪推荐</span>
-            </span>
-          </div>
-          <div class="swiper-slide">
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/9.jpg">
-              </div>
-              <span>甜品饮品</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/10.jpg">
-              </div>
-              <span>商超便利</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/11.jpg">
-              </div>
-              <span>美食</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/12.jpg">
-              </div>
-              <span>简餐</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/13.jpg">
-              </div>
-              <span>新店特惠</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/14.jpg">
-              </div>
-              <span>准时达</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/1.jpg">
-              </div>
-              <span>预订早餐</span>
-            </span>
-            <span href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{c.title}}</span>
             </span>
           </div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
       </div>
+<!--    后台数据加载完成前的一个初始图片-->
+<!--    img里加v-else是为了，获得后台数据后，初始图片就不用显示了-->
+      <img src="./images/msite_back.svg" alt="back" v-else>
     </nav>
     <!--首页附近商家-->
     <div class="msite_shop_list border-1px">
@@ -134,22 +50,55 @@ import Swiper from 'swiper'
 import 'swiper/dist/css/swiper.css'
 import HeaderTop from '../../components/HeaderTop/HeaderTop'
 import ShopList from '../../components/ShopList/ShopList'
+import {mapState} from 'vuex'
 
 export default {
+  data () {
+    return {
+      imgBaseUrl: 'https://fuss10.elemecdn.com'
+    }
+  },
   components: {
     HeaderTop,
     ShopList
   },
   mounted () {
-    // 创建一个swiper实例对象，来实现轮播
-    new Swiper('.swiper-container', {
-      // 如果需要分页器
-      pagination: {
-        el: '.swiper-pagination'
-      },
-      // 可以循环轮播
-      loop: true
-    })
+    this.$store.dispatch('getCategorys')
+    this.$store.dispatch('getShops')
+  },
+  computed: {
+    ...mapState(['address', 'categorys', 'userInfo']),
+    categorysArr () {
+      const max = 8
+      const arr = []
+      const {categorys} = this
+      let smallArr = []
+      categorys.forEach((c, index) => {
+        if (smallArr.length === 0) {
+          arr.push(smallArr)
+        }
+        smallArr.push(c)
+        if (smallArr.length === max) {
+          smallArr = []
+        }
+      })
+      return arr
+    }
+  },
+  watch: {
+    categorys (value) {
+      this.$nextTick(() => {
+        // 创建一个swiper实例对象，来实现轮播
+        new Swiper('.swiper-container', {
+          // 如果需要分页器
+          pagination: {
+            el: '.swiper-pagination'
+          },
+          // 可以循环轮播
+          loop: true
+        })
+      })
+    }
   }
 }
 </script>
@@ -208,5 +157,4 @@ export default {
           color #999
           font-size 14px
           line-height 20px
-
 </style>
