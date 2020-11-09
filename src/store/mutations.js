@@ -1,4 +1,4 @@
-/* 直接更新state的多个方法的对象
+/* 直接更新state的多个方法的对象  同步的函数
 * */
 import Vue from 'vue'
 import {
